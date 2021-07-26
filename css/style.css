@@ -1,0 +1,15 @@
+body{
+    background-color: #448AFF;
+}
+
+@media all and (display-mode: standalone) {
+    body {
+      background-color: yellow;
+    }
+  }
+
+  .add-button {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+  }
