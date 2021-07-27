@@ -32,38 +32,55 @@ self.addEventListener('install', function(event) {
     );
 });
 
-function isSuccessful(response) {
-    return response &&
-        response.status === 200 &&
-        response.type === 'basic';
-}
-
 self.addEventListener('fetch', function(event) {
     event.respondWith(
-        caches.match(event.request)
-        .then(function(response) {
-            if (response) {
-                return response; // Cache hit
-            }
-
-            return fetch(event.request.clone())
-                .then(function(response) {
-                    if (!isSuccessful(response)) {
-                        return response;
-                    }
-
-                    caches.open(CACHE_NAME)
-                        .then(function(cache) {
-                            cache.put(event.request, response.clone());
-                        });
-
+        caches.open(CACHE_NAME).then(function(cache) {
+            return cache.match(event.request).then(function(response) {
+                return response || fetch(event.request).then(function(response) {
+                    cache.put(event.request, response.clone());
                     return response;
                 });
+            });
         })
     );
 });
 
+// function isSuccessful(response) {
+//     return response &&
+//         response.status === 200 &&
+//         response.type === 'basic';
+// }
+
+// self.addEventListener('fetch', function(event) {
+//     event.respondWith(
+//         caches.match(event.request)
+//         .then(function(cacheResponse) {
+//             if (cacheResponse) {
+//                 return cacheResponse; // Cache hit
+//             }
+
+//             return fetch(event.request.clone())
+//                 .then(function(response) {
+//                     if (!isSuccessful(response)) {
+//                         return response;
+//                     }
+
+//                     caches.open(CACHE_NAME)
+//                         .then(function(cache) {
+//                             cache.put(event.request, response.clone());
+//                         });
+
+//                     return response;
+//                 });
+//         })
+//     );
+// });
+
 self.addEventListener('sync', function(event) {
-    console.log("Background");
-    document.body.append("<div>A</div>");
+    const syncPromise = new Promise((resolve, reject) => {
+        console.log("Background");
+        backgroundSync();
+    });
+
+    event.waitUntil(syncPromise);
 });

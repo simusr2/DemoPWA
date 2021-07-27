@@ -1,8 +1,11 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <title>Demo PWA</title>
     <!-- meta -->
+    <meta charset="UTF-8">
+    <meta name="description" content="Simple PWA demo" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#448AFF" />
     <meta name="msapplication-TileColor" content="#448AFF">
@@ -23,8 +26,14 @@
     <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="./img/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./img/favicon-16x16.png">
-    <link href="./css/style.css" rel="stylesheet" type="text/css" />
+
+    <link rel="preload" href="./css/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="./css/style.css"></noscript>
+
     <link rel="manifest" href="./manifest.json" />
+
+    <!-- script -->
+    <script src="./js/main.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -32,179 +41,28 @@
 
     <h1>Demo PWA</h1>
     <p>Demo</p>
+    <div>
+        <h4>Background sync</h4>
+        <div id="background-sync">
 
-    <button id="button-install">Install</button>
-    <button class="add-button">Add to home screen</button>
+        </div>
+        <div>
+            Work in progress
+        </div>
+    </div>
 
-    <!-- script -->
-    <script>
-        // Check that service workers are supported
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js', {
-                        scope: '/'
-                    })
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                        console.log('Service Worker is registered', registration);
+    <div>
+        <h4>Notification</h4>
+        <div>
+            <button onclick="sendNotification()">Test</button>
+        </div>
+        <div id="notification">
 
-                        // Background Sync
-                        registration.sync.register('syncTag');
-                    })
-                    .catch(err => {
-                        console.error('Registration failed:', err);
-                    });
-            });
-        } else {
-            console.log("Service worker not supported");
-        }
+        </div>
+    </div>
 
 
 
-        // if ('serviceWorker' in navigator) {
-        //     // Use the window load event to keep the page load performant
-        //     window.addEventListener('load', function() {
-        //         navigator.serviceWorker.register('./js/service-worker.js').then(function(registration) {
-
-
-        //             var serviceWorker;
-        //             if (registration.installing) {
-        //                 serviceWorker = registration.installing;
-        //                 // console.log('Service worker installing');
-        //             } else if (registration.waiting) {
-        //                 serviceWorker = registration.waiting;
-        //                 // console.log('Service worker installed & waiting');
-        //             } else if (registration.active) {
-        //                 serviceWorker = registration.active;
-        //                 // console.log('Service worker active');
-        //             }
-
-        //             if (serviceWorker) {
-        //                 console.log("sw current state", serviceWorker.state);
-        //                 if (serviceWorker.state == "activated") {
-        //                     //If push subscription wasnt done yet have to do here
-        //                     console.log("sw already activated - Do watever needed here");
-        //                 }
-        //                 serviceWorker.addEventListener("statechange", function(e) {
-        //                     console.log("sw statechange : ", e.target.state);
-        //                     if (e.target.state == "activated" || e.target.state == "redundant") {
-        //                         // use pushManger for subscribing here.
-        //                         console.log("Just now activated. now we can subscribe for push notification")
-        //                             //subscribeForPushNotification(reg);
-
-
-        //                         // Registration was successful
-        //                         console.log('ServiceWorker registration successful with scope: ', registration.scope);
-
-        //                         // Background Sync
-        //                         //registration.sync.register('syncTag');
-        //                     }
-        //                 });
-        //             }
-        //             // Check if push messaging is supported  
-        //             if (!('PushManager' in window)) {
-        //                 console.log('Push messaging isn\'t supported.');
-        //                 return;
-        //             }
-        //             //
-        //             if (Notification.permission === 'denied') {
-        //                 console.log('The user has blocked notifications.');
-        //                 return;
-        //             }
-
-
-
-
-
-        //         }, function(err) {
-        //             // registration failed :(
-        //             console.log('ServiceWorker registration failed: ', err);
-        //         });
-
-
-
-
-        //         navigator.serviceWorker.ready.then(function(reg) {
-        //             console.log("Ready")
-        //         })
-        //     });
-        // }
-
-
-        // // Initialize deferredPrompt for use later to show browser install prompt.
-        // let deferredPrompt;
-
-        // const addBtn = document.querySelector('.add-button');
-        // addBtn.style.display = 'none';
-
-        // window.addEventListener('beforeinstallprompt', (e) => {
-        //     // Prevent Chrome 67 and earlier from automatically showing the prompt
-        //     e.preventDefault();
-        //     // Stash the event so it can be triggered later.
-        //     deferredPrompt = e;
-        //     // Update UI to notify the user they can add to home screen
-        //     addBtn.style.display = 'block';
-
-        //     addBtn.addEventListener('click', (e) => {
-        //         // hide our user interface that shows our A2HS button
-        //         addBtn.style.display = 'none';
-        //         // Show the prompt
-        //         deferredPrompt.prompt();
-        //         // Wait for the user to respond to the prompt
-        //         deferredPrompt.userChoice.then((choiceResult) => {
-        //             if (choiceResult.outcome === 'accepted') {
-        //                 console.log('User accepted the A2HS prompt');
-        //             } else {
-        //                 console.log('User dismissed the A2HS prompt');
-        //             }
-        //             deferredPrompt = null;
-        //         });
-        //     });
-        // });
-
-        // document.getElementById('button-install').addEventListener('click', async() => {
-        //     // Hide the app provided install promotion
-        //     //hideInstallPromotion();
-        //     // Show the install prompt
-        //     deferredPrompt.prompt();
-        //     // Wait for the user to respond to the prompt
-        //     const {
-        //         outcome
-        //     } = await deferredPrompt.userChoice;
-        //     // Optionally, send analytics event with outcome of user choice
-        //     console.log(`User response to the install prompt: ${outcome}`);
-        //     // We've used the prompt, and can't use it again, throw it away
-        //     deferredPrompt = null;
-        // });
-
-        // window.addEventListener('appinstalled', () => {
-        //     // Hide the app-provided install promotion
-        //     //hideInstallPromotion();
-        //     // Clear the deferredPrompt so it can be garbage collected
-        //     deferredPrompt = null;
-        //     // Optionally, send analytics event to indicate successful install
-        //     console.log('PWA was installed');
-        // });
-
-        // function getPWADisplayMode() {
-        //     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        //     if (document.referrer.startsWith('android-app://')) {
-        //         return 'twa';
-        //     } else if (navigator.standalone || isStandalone) {
-        //         return 'standalone';
-        //     }
-        //     return 'browser';
-        // }
-
-        // window.matchMedia('(display-mode: standalone)').addEventListener('change', (evt) => {
-        //     let displayMode = 'browser';
-        //     if (evt.matches) {
-        //         displayMode = 'standalone';
-        //     }
-        //     // Log display mode change to analytics
-        //     console.log('DISPLAY_MODE_CHANGED', displayMode);
-        // });
-    </script>
 </body>
 
 </html>
