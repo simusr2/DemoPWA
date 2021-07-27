@@ -1,6 +1,8 @@
 # DemoPWA
 Simple PWA demo
 
+[Live demo] (https://happy-pare-a3963c.netlify.app/)
+
 Based on [What Web Can Do](https://github.com/NOtherDev/whatwebcando)
 
 ### Resources
